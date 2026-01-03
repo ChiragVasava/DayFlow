@@ -36,16 +36,16 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (employeeId, password) => {
     try {
-      const response = await api.post('/auth/signin', { email, password });
-      const { token, employee } = response.data;
+      const response = await api.post('/auth/signin', { employeeId, password });
+      const { token, employee, isFirstLogin } = response.data;
       
       localStorage.setItem('token', token);
       localStorage.setItem('employee', JSON.stringify(employee));
       setEmployee(employee);
       
-      return { success: true, employee };
+      return { success: true, employee, isFirstLogin };
     } catch (error) {
       return {
         success: false,

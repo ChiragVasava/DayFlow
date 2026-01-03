@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { LogIn, Mail, Lock } from 'lucide-react';
+import { LogIn, User, Lock } from 'lucide-react';
 import './Auth.css';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    employeeId: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
@@ -25,16 +25,22 @@ const SignIn = () => {
     e.preventDefault();
     setLoading(true);
 
-    const result = await login(formData.email, formData.password);
+    const result = await login(formData.employeeId, formData.password);
 
     if (result.success) {
-      toast.success('Welcome back!');
-      
-      // Navigate based on role
-      if (result.employee.role === 'Admin' || result.employee.role === 'HR') {
-        navigate('/admin/dashboard');
+      // Check if first login - redirect to change password
+      if (result.isFirstLogin) {
+        toast.success('Welcome! Please change your password.');
+        navigate('/change-password');
       } else {
-        navigate('/dashboard');
+        toast.success('Welcome back!');
+        
+        // Navigate based on role
+        if (result.employee.role === 'Admin' || result.employee.role === 'HR') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }
     } else {
       toast.error(result.message);
@@ -58,17 +64,17 @@ const SignIn = () => {
           <h2 className="auth-title">Sign In</h2>
 
           <div className="form-group">
-            <label htmlFor="email">
-              <Mail size={18} />
-              Email Address
+            <label htmlFor="employeeId">
+              <User size={18} />
+              Employee ID
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="employeeId"
+              name="employeeId"
+              value={formData.employeeId}
               onChange={handleChange}
-              placeholder="john.doe@company.com"
+              placeholder="OIJODO20220001"
               required
             />
           </div>
@@ -101,24 +107,11 @@ const SignIn = () => {
           </button>
 
           <p className="auth-footer">
-            Don't have an account?{' '}
-            <Link to="/signup" className="auth-link">
-              Sign Up
-            </Link>
+            <small style={{ color: '#6b7280' }}>
+              Contact your HR or Admin to create an account
+            </small>
           </p>
         </form>
-
-        <div className="demo-credentials">
-          <p className="demo-title">Demo Credentials:</p>
-          <div className="demo-info">
-            <div>
-              <strong>Admin:</strong> admin@dayflow.com / admin123
-            </div>
-            <div>
-              <strong>Employee:</strong> employee@dayflow.com / employee123
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

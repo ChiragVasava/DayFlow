@@ -86,54 +86,110 @@
 
 .employee-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
 }
 
 .employee-card {
   background: white;
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  position: relative;
 }
 
 .employee-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #667eea;
+}
+
+.status-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-indicator.status-present {
+  background: #10b981;
+}
+
+.status-indicator.status-absent {
+  background: #fbbf24;
+}
+
+.status-indicator.status-leave {
+  background: #3b82f6;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
 }
 
 .employee-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 20px;
+  font-weight: 600;
+  font-size: 16px;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.employee-avatar .avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .employee-info {
   flex: 1;
+  min-width: 0;
 }
 
 .employee-name {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 600;
   color: #1f2937;
-  margin-bottom: 4px;
+  margin: 0 0 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .employee-id {
-  font-size: 13px;
+  font-size: 12px;
   color: #6b7280;
-  margin-bottom: 8px;
+  margin: 0;
 }
 
 .employee-role {
@@ -141,26 +197,29 @@
 }
 
 .role-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: 20px;
+  font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .role-badge.role-admin {
   background: #fef3c7;
-  color: #f59e0b;
+  color: #d97706;
 }
 
 .role-badge.role-hr {
   background: #dbeafe;
-  color: #3b82f6;
+  color: #2563eb;
 }
 
 .role-badge.role-employee {
   background: #dcfce7;
-  color: #10b981;
+  color: #16a34a;
 }
 
 .employee-details {
@@ -190,7 +249,7 @@
 .detail-value {
   color: #1f2937;
   font-weight: 600;
-  text-align: right;
+  text-align: left;
   font-size: 15px;
   max-width: 70%;
   padding-left: 10px;
@@ -236,23 +295,7 @@
   }
 
   .employee-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .employee-details {
-    width: 100%;
-  }
-
-  .detail-row {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .detail-value {
-    max-width: 100%;
-    text-align: center;
+    padding: 14px 16px;
   }
 
   .employee-count {

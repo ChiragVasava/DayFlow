@@ -151,7 +151,7 @@ const LeaveManagement = () => {
                     <th>Days</th>
                     <th>Reason</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th>Remarks</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -172,16 +172,8 @@ const LeaveManagement = () => {
                           {leave.status}
                         </span>
                       </td>
-                      <td>
-                        {leave.status === 'Pending' && (
-                          <button
-                            className="btn-icon btn-danger"
-                            onClick={() => handleDelete(leave._id)}
-                            title="Delete"
-                          >
-                            <X size={16} />
-                          </button>
-                        )}
+                      <td className="remarks-cell">
+                        {leave.reviewComments || (leave.status === 'Pending' ? '—' : 'No remarks')}
                       </td>
                     </tr>
                   ))}

@@ -47,21 +47,46 @@ router.post('/', protect, async (req, res) => {
   try {
     const { leaveType, startDate, endDate, reason } = req.body;
     
-    // Check if employee has sufficient leave balance
-    const employee = await Employee.findById(req.employee._id);
-    const days = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1;
-    
-    if (leaveType === 'Paid' && employee.leaveBalance.paid < days) {
+    // Validate required fields
+    if (!leaveType || !startDate || !endDate || !reason) {
       return res.status(400).json({
         success: false,
-        message: `Insufficient paid leave balance. Available: ${employee.leaveBalance.paid} days`
+        message: 'All fields are required'
       });
     }
     
-    if (leaveType === 'Sick' && employee.leaveBalance.sick < days) {
+    // Check if employee has sufficient leave balance
+    const employee = await Employee.findById(req.employee._id);
+    
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        message: 'Employee not found'
+      });
+    }
+    
+    const days = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1;
+    
+    // Initialize leave balance if not exists
+    if (!employee.leaveBalance) {
+      employee.leaveBalance = { paid: 20, sick: 10 };
+      await employee.save();
+    }
+    
+    const paidBalance = employee.leaveBalance.paid || 0;
+    const sickBalance = employee.leaveBalance.sick || 0;
+    
+    if (leaveType === 'Paid' && paidBalance < days) {
       return res.status(400).json({
         success: false,
-        message: `Insufficient sick leave balance. Available: ${employee.leaveBalance.sick} days`
+        message: `Insufficient paid leave balance. Available: ${paidBalance} days`
+      });
+    }
+    
+    if (leaveType === 'Sick' && sickBalance < days) {
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient sick leave balance. Available: ${sickBalance} days`
       });
     }
     
@@ -70,6 +95,7 @@ router.post('/', protect, async (req, res) => {
       leaveType,
       startDate,
       endDate,
+      numberOfDays: days,
       reason
     });
     

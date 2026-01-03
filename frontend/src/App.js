@@ -6,14 +6,17 @@ import PrivateRoute from './components/PrivateRoute';
 
 // Pages
 import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
 import Attendance from './pages/Attendance';
+import AttendanceList from './pages/AttendanceList';
 import LeaveManagement from './pages/LeaveManagement';
 import PayrollManagement from './pages/PayrollManagement';
 import EmployeeList from './pages/EmployeeList';
+import EmployeeDetail from './pages/EmployeeDetail';
+import ChangePassword from './pages/ChangePassword';
+import CreateEmployee from './pages/CreateEmployee';
 
 function App() {
   return (
@@ -45,7 +48,11 @@ function App() {
         />
         <Routes>
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/change-password" element={
+            <PrivateRoute>
+              <ChangePassword />
+            </PrivateRoute>
+          } />
           
           <Route path="/dashboard" element={
             <PrivateRoute>
@@ -59,6 +66,12 @@ function App() {
             </PrivateRoute>
           } />
           
+          <Route path="/create-employee" element={
+            <PrivateRoute requiredRole={['Admin', 'HR']}>
+              <CreateEmployee />
+            </PrivateRoute>
+          } />
+          
           <Route path="/profile" element={
             <PrivateRoute>
               <Profile />
@@ -68,6 +81,12 @@ function App() {
           <Route path="/attendance" element={
             <PrivateRoute>
               <Attendance />
+            </PrivateRoute>
+          } />
+          
+          <Route path="/attendance-list" element={
+            <PrivateRoute>
+              <AttendanceList />
             </PrivateRoute>
           } />
           
@@ -86,6 +105,12 @@ function App() {
           <Route path="/employees" element={
             <PrivateRoute requiredRole={['Admin', 'HR']}>
               <EmployeeList />
+            </PrivateRoute>
+          } />
+          
+          <Route path="/employees/:employeeId" element={
+            <PrivateRoute requiredRole={['Admin', 'HR']}>
+              <EmployeeDetail />
             </PrivateRoute>
           } />
           

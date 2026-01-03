@@ -10,6 +10,8 @@ router.get('/', protect, async (req, res) => {
   try {
     const { startDate, endDate, employeeId } = req.query;
     
+    console.log('📅 Attendance GET request:', { startDate, endDate, employeeId, role: req.employee?.role });
+    
     let query = {};
     
     // Build query based on role
@@ -19,17 +21,21 @@ router.get('/', protect, async (req, res) => {
       query.employee = employeeId;
     }
     
-    // Date range filter
+    // Date range filter with proper timezone handling
     if (startDate && endDate) {
       query.date = {
         $gte: new Date(startDate),
-        $lte: new Date(endDate)
+        $lt: new Date(endDate)
       };
     }
+    
+    console.log('📊 Query:', JSON.stringify(query, null, 2));
     
     const attendance = await Attendance.find(query)
       .populate('employee', 'firstName lastName employeeId')
       .sort({ date: -1 });
+    
+    console.log('✅ Found attendance records:', attendance.length);
     
     res.json({
       success: true,
@@ -37,7 +43,7 @@ router.get('/', protect, async (req, res) => {
       attendance
     });
   } catch (error) {
-    console.error('Get attendance error:', error);
+    console.error('❌ Get attendance error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'
@@ -50,13 +56,20 @@ router.get('/', protect, async (req, res) => {
 // @access  Private
 router.post('/checkin', protect, async (req, res) => {
   try {
+    // Get today's date in UTC at midnight
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
     
     // Check if already checked in today
     const existingAttendance = await Attendance.findOne({
       employee: req.employee._id,
-      date: today
+      date: {
+        $gte: today,
+        $lt: tomorrow
+      }
     });
     
     if (existingAttendance) {
@@ -92,12 +105,19 @@ router.post('/checkin', protect, async (req, res) => {
 // @access  Private
 router.post('/checkout', protect, async (req, res) => {
   try {
+    // Get today's date in UTC at midnight
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
     
     const attendance = await Attendance.findOne({
       employee: req.employee._id,
-      date: today
+      date: {
+        $gte: today,
+        $lt: tomorrow
+      }
     });
     
     if (!attendance) {

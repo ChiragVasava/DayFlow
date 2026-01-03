@@ -61,6 +61,100 @@ const employeeSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  salary: {
+    type: Number,
+    default: 0
+  },
+  salaryInfo: {
+    monthlyWage: {
+      type: Number,
+      default: 0
+    },
+    yearlyWage: {
+      type: Number,
+      default: 0
+    },
+    workingDaysPerWeek: {
+      type: Number,
+      default: 5
+    },
+    breakTimeHours: {
+      type: Number,
+      default: 1
+    },
+    components: {
+      basicSalary: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 50 }
+      },
+      houseRentAllowance: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 50 }
+      },
+      standardAllowance: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 16.67 }
+      },
+      performanceBonus: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 6.33 }
+      },
+      leaveTravelAllowance: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 6.33 }
+      },
+      fixedAllowance: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 11.67 }
+      }
+    },
+    providentFund: {
+      employeeContribution: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 12 }
+      },
+      employerContribution: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 12 }
+      }
+    },
+    taxDeductions: {
+      professionalTax: {
+        type: Number,
+        default: 200
+      },
+      incomeTax: {
+        value: { type: Number, default: 0 },
+        percentage: { type: Number, default: 0 }
+      }
+    }
+  },
+  privateInfo: {
+    dateOfBirth: Date,
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other', '']
+    },
+    maritalStatus: {
+      type: String,
+      enum: ['Single', 'Married', 'Divorced', 'Widowed', '']
+    },
+    nationality: String,
+    personalEmail: String,
+    emergencyContact: {
+      name: String,
+      relationship: String,
+      phone: String
+    }
+  },
+  bankDetails: {
+    accountNumber: String,
+    bankName: String,
+    ifscCode: String,
+    panNumber: String,
+    uanNumber: String,
+    employeeCode: String
+  },
   profilePicture: {
     type: String,
     default: ''
@@ -78,6 +172,10 @@ const employeeSchema = new mongoose.Schema({
     default: false
   },
   isActive: {
+    type: Boolean,
+    default: true
+  },
+  isFirstLogin: {
     type: Boolean,
     default: true
   },

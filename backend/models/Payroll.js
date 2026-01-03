@@ -39,11 +39,11 @@ const payrollSchema = new mongoose.Schema({
   },
   grossSalary: {
     type: Number,
-    required: true
+    default: 0
   },
   netSalary: {
     type: Number,
-    required: true
+    default: 0
   },
   paymentStatus: {
     type: String,

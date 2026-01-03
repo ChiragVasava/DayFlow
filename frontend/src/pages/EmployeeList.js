@@ -1,51 +1,98 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
-import { Search, Users, Filter } from 'lucide-react';
+import { Search, Users, Filter, Plane } from 'lucide-react';
 import { format } from 'date-fns';
 import './EmployeeList.css';
 
 const EmployeeList = () => {
+  const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const [attendanceMap, setAttendanceMap] = useState({});
 
   useEffect(() => {
-    fetchEmployees();
+    fetchEmployeesAndAttendance();
   }, []);
 
   useEffect(() => {
     let filtered = employees.filter((emp) => {
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         emp.firstName.toLowerCase().includes(searchLower) ||
         emp.lastName.toLowerCase().includes(searchLower) ||
         emp.email.toLowerCase().includes(searchLower) ||
         emp.employeeId.toLowerCase().includes(searchLower) ||
         emp.department?.toLowerCase().includes(searchLower) ||
         emp.designation?.toLowerCase().includes(searchLower);
-      
+
       const matchesDepartment = !departmentFilter || emp.department === departmentFilter;
       const matchesRole = !roleFilter || emp.role === roleFilter;
-      
+
       return matchesSearch && matchesDepartment && matchesRole;
     });
     setFilteredEmployees(filtered);
   }, [searchTerm, departmentFilter, roleFilter, employees]);
 
-  const fetchEmployees = async () => {
+  const fetchEmployeesAndAttendance = async () => {
     try {
-      const response = await api.get('/employees');
-      setEmployees(response.data.employees);
-      setFilteredEmployees(response.data.employees);
+      // Fetch employees
+      const employeesResponse = await api.get('/employees');
+      const employeesData = employeesResponse.data.employees;
+      setEmployees(employeesData);
+      setFilteredEmployees(employeesData);
+
+      // Fetch today's attendance for all employees
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const attendanceResponse = await api.get('/attendance', {
+        params: {
+          startDate: today.toISOString(),
+          endDate: tomorrow.toISOString()
+        }
+      });
+
+      // Create a map of employee ID to attendance status
+      const attMap = {};
+      if (attendanceResponse.data.attendance) {
+        attendanceResponse.data.attendance.forEach(att => {
+          if (att.employee && att.employee._id) {
+            attMap[att.employee._id] = att.status.toLowerCase();
+          }
+        });
+      }
+      setAttendanceMap(attMap);
     } catch (error) {
       toast.error('Failed to load employees');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getEmployeeStatus = (employeeId) => {
+    return attendanceMap[employeeId] || 'absent';
+  };
+
+  const renderStatusIndicator = (status) => {
+    if (status === 'present' || status === 'half-day') {
+      return <div className="status-indicator status-present" title="Present in office"></div>;
+    } else if (status === 'leave') {
+      return (
+        <div className="status-indicator status-leave" title="On leave">
+          <Plane size={12} />
+        </div>
+      );
+    } else {
+      return <div className="status-indicator status-absent" title="Absent"></div>;
     }
   };
 
@@ -66,6 +113,7 @@ const EmployeeList = () => {
           <div>
             <h1>Employees</h1>
             <p>Manage your organization's workforce</p>
+            <br />
           </div>
           <div className="employee-count">
             <Users size={24} />
@@ -129,51 +177,28 @@ const EmployeeList = () => {
         <div className="employee-grid">
           {filteredEmployees.length > 0 ? (
             filteredEmployees.map((emp) => (
-              <div key={emp._id} className="employee-card">
+              <div
+                key={emp._id}
+                className="employee-card"
+                onClick={() => navigate(`/employees/${emp._id}`)}
+              >
+                {renderStatusIndicator(getEmployeeStatus(emp._id))}
                 <div className="employee-avatar">
-                  {emp.firstName[0]}{emp.lastName[0]}
+                  {emp.profilePicture ? (
+                    <img src={emp.profilePicture} alt="Profile" className="avatar-image" />
+                  ) : (
+                    <>{emp.firstName[0]}{emp.lastName[0]}</>
+                  )}
                 </div>
                 <div className="employee-info">
                   <h3 className="employee-name">
                     {emp.firstName} {emp.lastName}
                   </h3>
                   <p className="employee-id">ID: {emp.employeeId}</p>
-                  <p className="employee-role">
-                    <span className={`role-badge role-${emp.role.toLowerCase()}`}>
-                      {emp.role}
-                    </span>
-                  </p>
-                  <div className="employee-details">
-                    <div className="detail-row">
-                      <span className="detail-label">Email:</span>
-                      <span className="detail-value">{emp.email}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Phone:</span>
-                      <span className="detail-value">{emp.phoneNumber || 'Not provided'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Department:</span>
-                      <span className="detail-value">{emp.department || 'Not assigned'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Position:</span>
-                      <span className="detail-value">{emp.designation || 'Not assigned'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Joined:</span>
-                      <span className="detail-value">
-                        {format(new Date(emp.dateOfJoining), 'MMM dd, yyyy')}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Status:</span>
-                      <span className={`status-badge ${emp.isActive ? 'active' : 'inactive'}`}>
-                        {emp.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                  </div>
                 </div>
+                <span className={`role-badge role-${emp.role?.toLowerCase()}`}>
+                  {emp.role}
+                </span>
               </div>
             ))
           ) : (

@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   Home, Users, Calendar, FileText, DollarSign, 
-  LogOut, Menu, X, User, Settings 
+  LogOut, Menu, X, User, Settings, List
 } from 'lucide-react';
 import './Layout.css';
 
@@ -19,15 +19,17 @@ const Layout = ({ children }) => {
   };
 
   const isAdmin = employee?.role === 'Admin' || employee?.role === 'HR';
+  const homePath = isAdmin ? '/admin/dashboard' : '/dashboard';
 
   const navigation = [
     { 
       name: 'Dashboard', 
-      path: isAdmin ? '/admin/dashboard' : '/dashboard', 
+      path: homePath, 
       icon: Home 
     },
     { name: 'Profile', path: '/profile', icon: User },
     { name: 'Attendance', path: '/attendance', icon: Calendar },
+    { name: 'Attendance Records', path: '/attendance-list', icon: List },
     { name: 'Leave', path: '/leave', icon: FileText },
     { name: 'Payroll', path: '/payroll', icon: DollarSign },
   ];
@@ -36,15 +38,25 @@ const Layout = ({ children }) => {
     navigation.push({ name: 'Employees', path: '/employees', icon: Users });
   }
 
+  // Check if current path starts with nav item path (for subpages)
+  const isNavActive = (navPath) => {
+    if (navPath === homePath) {
+      return location.pathname === navPath;
+    }
+    return location.pathname.startsWith(navPath);
+  };
+
   return (
     <div className="layout">
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <h1 className="logo">
-            <span className="logo-icon">⚡</span>
-            DayFlow
-          </h1>
+          <Link to={homePath} className="logo-link" onClick={() => setSidebarOpen(false)}>
+            <h1 className="logo">
+              <span className="logo-icon">⚡</span>
+              DayFlow
+            </h1>
+          </Link>
           <button 
             className="close-sidebar"
             onClick={() => setSidebarOpen(false)}
@@ -56,7 +68,7 @@ const Layout = ({ children }) => {
         <nav className="sidebar-nav">
           {navigation.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = isNavActive(item.path);
             
             return (
               <Link
@@ -75,7 +87,11 @@ const Layout = ({ children }) => {
         <div className="sidebar-footer">
           <div className="user-info">
             <div className="user-avatar">
-              {employee?.firstName?.[0]}{employee?.lastName?.[0]}
+              {employee?.profilePicture ? (
+                <img src={employee.profilePicture} alt="Profile" className="avatar-image" />
+              ) : (
+                <>{employee?.firstName?.[0]}{employee?.lastName?.[0]}</>
+              )}
             </div>
             <div className="user-details">
               <p className="user-name">
@@ -110,7 +126,11 @@ const Layout = ({ children }) => {
           <div className="top-bar-right">
             <div className="user-badge">
               <div className="user-avatar-small">
-                {employee?.firstName?.[0]}{employee?.lastName?.[0]}
+                {employee?.profilePicture ? (
+                  <img src={employee.profilePicture} alt="Profile" className="avatar-image-small" />
+                ) : (
+                  <>{employee?.firstName?.[0]}{employee?.lastName?.[0]}</>
+                )}
               </div>
               <span className="user-name-small">
                 {employee?.firstName} {employee?.lastName}

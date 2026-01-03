@@ -176,6 +176,12 @@
   margin-top: 24px;
 }
 
+.remarks-cell {
+  max-width: 200px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
 @media (max-width: 768px) {
   .leave-stats {
     grid-template-columns: 1fr;

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
-import { Users, Calendar, FileText, TrendingUp, Building2 } from 'lucide-react';
+import { Users, Calendar, FileText, TrendingUp, Building2, UserPlus, X } from 'lucide-react';
 import './Dashboard.css';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalEmployees: 0,
     presentToday: 0,
@@ -14,6 +16,14 @@ const AdminDashboard = () => {
     departmentBreakdown: {},
   });
   const [loading, setLoading] = useState(true);
+  
+  // Leave action modal state
+  const [leaveModal, setLeaveModal] = useState({
+    isOpen: false,
+    leave: null,
+    action: null,
+    remarks: '',
+  });
 
   useEffect(() => {
     fetchDashboardData();
@@ -65,13 +75,32 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLeaveAction = async (leaveId, status) => {
+  const openLeaveModal = (leave, action) => {
+    setLeaveModal({
+      isOpen: true,
+      leave,
+      action,
+      remarks: '',
+    });
+  };
+
+  const closeLeaveModal = () => {
+    setLeaveModal({
+      isOpen: false,
+      leave: null,
+      action: null,
+      remarks: '',
+    });
+  };
+
+  const handleLeaveAction = async () => {
     try {
-      await api.put(`/leave/${leaveId}/review`, {
-        status,
-        reviewComments: status === 'Approved' ? 'Approved by admin' : 'Rejected by admin',
+      await api.put(`/leave/${leaveModal.leave._id}/review`, {
+        status: leaveModal.action,
+        reviewComments: leaveModal.remarks || `${leaveModal.action} by admin`,
       });
-      toast.success(`Leave ${status.toLowerCase()} successfully`);
+      toast.success(`Leave ${leaveModal.action.toLowerCase()} successfully`);
+      closeLeaveModal();
       fetchDashboardData();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update leave');
@@ -92,8 +121,17 @@ const AdminDashboard = () => {
     <Layout>
       <div className="dashboard">
         <div className="page-header">
-          <h1>Admin Dashboard 📊</h1>
-          <p>Overview of your organization's HR metrics.</p>
+          <div>
+            <h1>Admin Dashboard 📊</h1>
+            <p>Overview of your organization's HR metrics.</p>
+          </div>
+          <button 
+            className="create-employee-btn" 
+            onClick={() => navigate('/create-employee')}
+          >
+            <UserPlus size={20} />
+            Create Employee
+          </button>
         </div>
 
         {/* Quick Stats */}
@@ -123,7 +161,7 @@ const AdminDashboard = () => {
               <FileText size={24} color="#f59e0b" />
             </div>
             <div className="stat-content">
-              <p className="stat-label">Pending Leaves</p>
+              <p className="stat-label">Pending Leave Requests</p>
               <p className="stat-value">{stats.pendingLeaves}</p>
             </div>
           </div>
@@ -222,14 +260,14 @@ const AdminDashboard = () => {
                         <div className="action-buttons">
                           <button 
                             className="btn-icon btn-success"
-                            onClick={() => handleLeaveAction(leave._id, 'Approved')}
+                            onClick={() => openLeaveModal(leave, 'Approved')}
                             title="Approve"
                           >
                             ✓
                           </button>
                           <button 
                             className="btn-icon btn-danger"
-                            onClick={() => handleLeaveAction(leave._id, 'Rejected')}
+                            onClick={() => openLeaveModal(leave, 'Rejected')}
                             title="Reject"
                           >
                             ✕
@@ -245,6 +283,55 @@ const AdminDashboard = () => {
             <p className="empty-state">No pending leave requests.</p>
           )}
         </div>
+
+        {/* Leave Action Modal */}
+        {leaveModal.isOpen && (
+          <div className="modal-overlay" onClick={closeLeaveModal}>
+            <div className="modal-content leave-action-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>{leaveModal.action === 'Approved' ? 'Approve' : 'Reject'} Leave Request</h2>
+                <button className="close-btn" onClick={closeLeaveModal}>
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="modal-body">
+                <div className="leave-details-summary">
+                  <p><strong>Employee:</strong> {leaveModal.leave?.employee?.firstName} {leaveModal.leave?.employee?.lastName}</p>
+                  <p><strong>Leave Type:</strong> {leaveModal.leave?.leaveType}</p>
+                  <p><strong>Dates:</strong> {new Date(leaveModal.leave?.startDate).toLocaleDateString()} - {new Date(leaveModal.leave?.endDate).toLocaleDateString()}</p>
+                  <p><strong>Reason:</strong> {leaveModal.leave?.reason}</p>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="remarks">
+                    Remarks <span style={{ color: '#6b7280', fontWeight: 'normal' }}>(optional)</span>
+                  </label>
+                  <textarea
+                    id="remarks"
+                    value={leaveModal.remarks}
+                    onChange={(e) => setLeaveModal({ ...leaveModal, remarks: e.target.value })}
+                    placeholder={`Enter your remarks for ${leaveModal.action === 'Approved' ? 'approving' : 'rejecting'} this leave request...`}
+                    rows={4}
+                    className="remarks-textarea"
+                  />
+                </div>
+              </div>
+              
+              <div className="modal-actions">
+                <button className="btn-secondary" onClick={closeLeaveModal}>
+                  Cancel
+                </button>
+                <button 
+                  className={`btn-primary ${leaveModal.action === 'Approved' ? 'btn-approve' : 'btn-reject'}`}
+                  onClick={handleLeaveAction}
+                >
+                  {leaveModal.action === 'Approved' ? 'Approve' : 'Reject'} Leave
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

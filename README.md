@@ -13,10 +13,16 @@ A modern, full-stack Human Resource Management System (HRMS) built with the MERN
 ## ✨ Features
 
 ### 🔐 Authentication & Authorization
+- **Auto-generated Employee ID system** (Format: OIJODO20220001)
+- System-generated passwords for new employees
 - Secure JWT-based authentication
 - Role-based access control (Admin, HR, Employee)
 - Password encryption with bcrypt
+- Forced password change on first login
+- Admin/HR-only employee creation (no public registration)
 - Email verification support
+
+*See [AUTHENTICATION_GUIDE.md](AUTHENTICATION_GUIDE.md) for detailed information*
 
 ### 👥 Employee Management
 - Complete employee profile management
@@ -106,6 +112,11 @@ cp .env.example .env
 # On Windows: Start MongoDB service from Services
 # On Mac/Linux: sudo systemctl start mongod
 
+# Create the first admin account
+node createAdmin.js
+# This will create an admin account with Employee ID: OIADMN20230001
+# Default password: admin123 (change after first login!)
+
 # Start the backend server
 npm run dev
 ```
@@ -169,7 +180,8 @@ DayFlow/
 │   │   │   └── AuthContext.js
 │   │   ├── pages/
 │   │   │   ├── SignIn.js
-│   │   │   ├── SignUp.js
+│   │   │   ├── ChangePassword.js
+│   │   │   ├── CreateEmployee.js
 │   │   │   ├── EmployeeDashboard.js
 │   │   │   ├── AdminDashboard.js
 │   │   │   ├── Profile.js
@@ -198,6 +210,7 @@ DayFlow/
 
 ### HR Officer / Admin
 - All employee permissions
+- **Create new employee accounts** with auto-generated credentials
 - View all employees
 - Manage employee profiles
 - View all attendance records
@@ -207,35 +220,60 @@ DayFlow/
 
 ## 🎯 Getting Started
 
-### Creating Your First Admin Account
+### First Time Setup
 
-1. Start both backend and frontend servers
-2. Navigate to `http://localhost:3000/signup`
-3. Fill in the registration form:
-   - Select **Admin** as the role
-   - Provide all required information
-   - Click "Create Account"
-4. You'll be automatically logged in
+1. **Start MongoDB** - Ensure MongoDB is running
+2. **Install Dependencies** - Run `npm install` in both backend and frontend
+3. **Create Admin Account** - Run `node createAdmin.js` in the backend directory
+4. **Start Servers** - Run backend (`npm run dev`) and frontend (`npm start`)
 
-### Demo Credentials (After Creating Sample Data)
+### Admin Login (First Time)
 
-You can create sample employees with these roles:
+1. Navigate to `http://localhost:3000/signin`
+2. Login with default admin credentials:
+   - **Employee ID**: `OIADMN20230001`
+   - **Password**: `admin123`
+3. ⚠️ **Important**: Change the default password after first login!
 
-**Admin Account:**
-- Email: admin@dayflow.com
-- Password: admin123
-- Role: Admin
+### Creating New Employees
 
-**Employee Account:**
-- Email: employee@dayflow.com
-- Password: employee123
-- Role: Employee
+1. Login as Admin/HR
+2. Click the **"Create Employee"** button on the Admin Dashboard
+3. Fill in employee details (name, email, phone, position, department, etc.)
+4. Click "Create Employee"
+5. **Save the generated credentials** displayed in the modal:
+   - Employee ID (e.g., OIJODO20220001)
+   - Temporary Password (e.g., a7f3c8d1)
+6. Share these credentials securely with the new employee
+
+### Employee First Login
+
+1. Receive Employee ID and temporary password from HR/Admin
+2. Go to `http://localhost:3000/signin`
+3. Enter Employee ID and temporary password
+4. You'll be **automatically redirected** to change your password
+5. Enter current password and create a new password
+6. Login again with your new password
+
+### Authentication System
+
+DayFlow uses an **auto-generated Employee ID system** for enhanced security:
+
+- **Employee ID Format**: `OI[FirstName2][LastName2][Year][SerialNum4]`
+  - Example: John Doe joining 2022 → `OIJODO20220001`
+- **No public registration** - Only Admin/HR can create accounts
+- **System-generated passwords** - Random secure passwords for new employees
+- **Forced password change** - New employees must change password on first login
+
+📖 For detailed authentication documentation, see [AUTHENTICATION_GUIDE.md](AUTHENTICATION_GUIDE.md)
 
 ## 🔧 API Endpoints
 
 ### Authentication
 ```
-POST /api/auth/signup      - Register new employee
+POST /api/auth/create-employee  - Create new employee (Admin/HR only)
+POST /api/auth/signin           - Login with Employee ID
+PUT  /api/auth/change-password  - Change password
 POST /api/auth/signin      - Login
 GET  /api/auth/me          - Get current user
 ```

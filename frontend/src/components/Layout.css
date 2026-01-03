@@ -27,6 +27,15 @@
   justify-content: space-between;
 }
 
+.logo-link {
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.logo-link:hover {
+  transform: scale(1.02);
+}
+
 .logo {
   font-size: 28px;
   font-weight: bold;
@@ -37,6 +46,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0;
+  cursor: pointer;
 }
 
 .logo-icon {
@@ -107,6 +118,13 @@
   justify-content: center;
   font-weight: bold;
   font-size: 18px;
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .user-details {
@@ -202,6 +220,13 @@
   justify-content: center;
   font-weight: bold;
   font-size: 14px;
+  overflow: hidden;
+}
+
+.avatar-image-small {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .user-name-small {
@@ -259,4 +284,5 @@
   .content {
     padding: 16px;
   }
+
 }
