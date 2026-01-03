@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
@@ -7,6 +8,7 @@ import { format } from 'date-fns';
 import './EmployeeList.css';
 
 const EmployeeList = () => {
+  const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,17 +23,17 @@ const EmployeeList = () => {
   useEffect(() => {
     let filtered = employees.filter((emp) => {
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         emp.firstName.toLowerCase().includes(searchLower) ||
         emp.lastName.toLowerCase().includes(searchLower) ||
         emp.email.toLowerCase().includes(searchLower) ||
         emp.employeeId.toLowerCase().includes(searchLower) ||
         emp.department?.toLowerCase().includes(searchLower) ||
         emp.designation?.toLowerCase().includes(searchLower);
-      
+
       const matchesDepartment = !departmentFilter || emp.department === departmentFilter;
       const matchesRole = !roleFilter || emp.role === roleFilter;
-      
+
       return matchesSearch && matchesDepartment && matchesRole;
     });
     setFilteredEmployees(filtered);
@@ -66,6 +68,7 @@ const EmployeeList = () => {
           <div>
             <h1>Employees</h1>
             <p>Manage your organization's workforce</p>
+            <br />
           </div>
           <div className="employee-count">
             <Users size={24} />
@@ -129,7 +132,11 @@ const EmployeeList = () => {
         <div className="employee-grid">
           {filteredEmployees.length > 0 ? (
             filteredEmployees.map((emp) => (
-              <div key={emp._id} className="employee-card">
+              <div
+                key={emp._id}
+                className="employee-card"
+                onClick={() => navigate(`/employees/${emp._id}`)}
+              >
                 <div className="employee-avatar">
                   {emp.firstName[0]}{emp.lastName[0]}
                 </div>
@@ -138,40 +145,10 @@ const EmployeeList = () => {
                     {emp.firstName} {emp.lastName}
                   </h3>
                   <p className="employee-id">ID: {emp.employeeId}</p>
-                  <p className="employee-role">
-                    <span className={`role-badge role-${emp.role.toLowerCase()}`}>
+                  <div className="employee-meta">
+                    <span className={`role-badge role-${emp.role?.toLowerCase()}`}>
                       {emp.role}
                     </span>
-                  </p>
-                  <div className="employee-details">
-                    <div className="detail-row">
-                      <span className="detail-label">Email:</span>
-                      <span className="detail-value">{emp.email}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Phone:</span>
-                      <span className="detail-value">{emp.phoneNumber || 'Not provided'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Department:</span>
-                      <span className="detail-value">{emp.department || 'Not assigned'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Position:</span>
-                      <span className="detail-value">{emp.designation || 'Not assigned'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Joined:</span>
-                      <span className="detail-value">
-                        {format(new Date(emp.dateOfJoining), 'MMM dd, yyyy')}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Status:</span>
-                      <span className={`status-badge ${emp.isActive ? 'active' : 'inactive'}`}>
-                        {emp.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
