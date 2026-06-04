@@ -1,0 +1,24 @@
+{
+  "name": "dayflow-hrms",
+  "version": "1.0.0",
+  "description": "DayFlow - Human Resource Management System",
+  "author": "Your Name",
+  "license": "ISC",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
+    "start-backend": "cd backend && npm run dev",
+    "start-frontend": "cd frontend && npm start",
+    "build-frontend": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "hrms",
+    "hr",
+    "management",
+    "mern",
+    "mongodb",
+    "express",
+    "react",
+    "nodejs"
+  ]
+}

@@ -1,0 +1,255 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+  overflow: hidden;
+}
+
+.auth-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 32px;
+  text-align: center;
+  color: white;
+}
+
+.auth-logo {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.auth-subtitle {
+  font-size: 16px;
+  opacity: 0.9;
+  padding-left: 20px;
+}
+
+.auth-form {
+  padding: 32px;
+}
+
+.auth-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s;
+  margin-top: 8px;
+}
+
+.auth-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.auth-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner-small {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.auth-link {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-link:hover {
+  color: #764ba2;
+}
+
+.demo-credentials {
+  background: #f9fafb;
+  padding: 20px 32px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.demo-title {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.demo-info {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.demo-info div {
+  margin-bottom: 4px;
+}
+
+.demo-info strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card {
+    margin: 0;
+  }
+
+  .auth-form {
+    padding: 24px;
+  }
+
+  .auth-header {
+    padding: 24px;
+  }
+}
+
+.guest-login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.guest-login-divider::before,
+.guest-login-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.guest-login-divider span {
+  padding: 0 10px;
+}
+
+.guest-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.guest-btn {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.guest-admin-btn {
+  color: #764ba2;
+  border-color: #d8b4fe;
+}
+
+.guest-admin-btn:hover {
+  background: #faf5ff;
+  border-color: #764ba2;
+}
+
+.guest-emp-btn {
+  color: #3b82f6;
+  border-color: #bfdbfe;
+}
+
+.guest-emp-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
