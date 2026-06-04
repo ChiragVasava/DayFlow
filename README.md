@@ -1,4 +1,4 @@
-# DayFlow - Human Resource Management System 🚀
+# DayFlow - Human Resource Management System 🚀👱
 
 **Every workday, perfectly aligned.**
 
