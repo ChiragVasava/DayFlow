@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+let baseURL = process.env.REACT_APP_API_URL || 'https://dayflow-backend-tjr6.onrender.com/api';
+
+// Self-healing check: Ensure baseURL ends with /api
+if (baseURL && !baseURL.endsWith('/api') && !baseURL.endsWith('/api/')) {
+  baseURL = baseURL.endsWith('/') ? `${baseURL}api` : `${baseURL}/api`;
+}
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://dayflow-backend-tjr6.onrender.com/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
