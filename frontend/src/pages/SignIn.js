@@ -11,20 +11,8 @@ const SignIn = () => {
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const { login, guestLogin } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
-
-  const handleGuestLogin = (role) => {
-    const result = guestLogin(role);
-    if (result.success) {
-      toast.success(`Welcome to DayFlow (Guest Mode - ${role})!`);
-      if (role === 'Admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/dashboard');
-      }
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({
@@ -118,26 +106,6 @@ const SignIn = () => {
             )}
           </button>
 
-          <div className="guest-login-divider">
-            <span>or</span>
-          </div>
-
-          <div className="guest-buttons">
-            <button
-              type="button"
-              className="guest-btn guest-admin-btn"
-              onClick={() => handleGuestLogin('Admin')}
-            >
-              ⚡ Explore as Guest Admin
-            </button>
-            <button
-              type="button"
-              className="guest-btn guest-emp-btn"
-              onClick={() => handleGuestLogin('Employee')}
-            >
-              👤 Explore as Guest Employee
-            </button>
-          </div>
 
           <p className="auth-footer">
             <small style={{ color: '#6b7280' }}>
