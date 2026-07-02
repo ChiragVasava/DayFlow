@@ -5,51 +5,7 @@ const Employee = require('../models/Employee');
 const { generateToken, protect, authorize } = require('../middleware/auth');
 const crypto = require('crypto');
 
-// @route   GET /api/auth/seed-admin
-// @desc    Seed default admin user (Temporary)
-// @access  Public
-router.get('/seed-admin', async (req, res) => {
-  try {
-    const existingAdmin = await Employee.findOne({ employeeId: 'OIADMN20230001' });
-    if (existingAdmin) {
-      return res.json({
-        success: true,
-        message: 'Admin account already exists',
-        employeeId: existingAdmin.employeeId,
-        email: existingAdmin.email
-      });
-    }
 
-    const adminData = {
-      employeeId: 'OIADMN20230001',
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@dayflow.com',
-      password: 'admin123',
-      role: 'Admin',
-      department: 'Management',
-      designation: 'System Administrator',
-      phoneNumber: '+1234567890',
-      dateOfJoining: new Date(),
-      isVerified: true,
-      isActive: true,
-      isFirstLogin: false,
-      leaveBalance: { paid: 20, sick: 10, unpaid: 0 }
-    };
-
-    const admin = await Employee.create(adminData);
-
-    res.json({
-      success: true,
-      message: 'Admin account created successfully!',
-      employeeId: admin.employeeId,
-      email: admin.email
-    });
-  } catch (error) {
-    console.error('Seed admin error:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
 
 // @route   POST /api/auth/create-employee
 // @desc    Create a new employee (Admin/HR only)
