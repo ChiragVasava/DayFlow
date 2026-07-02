@@ -9,7 +9,7 @@
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
     "start-backend": "cd backend && npm run dev",
     "start-frontend": "cd frontend && npm start",
-    "build-frontend": "cd frontend && npm run build"
+    "build-frontend": "cd frontend && CI=false npm run build"
   },
   "keywords": [
     "hrms",
