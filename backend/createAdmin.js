@@ -5,7 +5,7 @@ require('dotenv').config();
 const createAdmin = async () => {
   try {
     // Connect to MongoDB
-    const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/dayflow';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dayflow';
     await mongoose.connect(mongoURI);
     console.log('✅ Connected to MongoDB');
 
