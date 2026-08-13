@@ -26,7 +26,10 @@ export const AuthProvider = ({ children }) => {
           await api.get('/auth/me');
         } catch (error) {
           console.error('Token validation failed:', error);
-          logout();
+          // Only log out if it is a definitive authentication failure (401 or 403)
+          if (error.response?.status === 401 || error.response?.status === 403) {
+            logout();
+          }
         }
       }
       setLoading(false);
